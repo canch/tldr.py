@@ -85,22 +85,33 @@ def build_index():
         json.dump(new_index, f)
 
 
-@click.group(context_settings={'help_option_names': ('-h', '--help')})
+@click.command(context_settings={'help_option_names': ('-h', '--help')})
 @click.version_option(__version__, '-V', '--version', message='%(version)s')
-def cli():
-    """A python client for tldr: simplified and community-driven man pages."""
-    pass  # pragma: no cover
-
-
-@cli.command()
 @click.argument('command')
+def cli(**kws):
+    """A python client for tldr: simplified and community-driven man pages."""
+    find(kws['command'])
+
+
+def as_option(fn):
+    """Add an option to cli."""
+    def callback(ctx, param, value):
+        if value:
+            fn(value) if narg else fn()
+            ctx.exit()
+
+    narg = fn.__code__.co_argcount
+    decorator = click.option('--'+fn.__name__, is_flag=not(narg), callback=callback, help=fn.__doc__)
+    globals()['cli'] = decorator(cli)
+
+
 def find(command):
     """Find the command usage."""
     output_lines = parse_man_page(command)
     click.echo(''.join(output_lines))
 
 
-@cli.command()
+@as_option
 def update():
     """Update to the latest pages."""
     repo_directory = get_config()['repo_directory']
@@ -121,7 +132,7 @@ def update():
         click.echo("No need for updates.")
 
 
-@cli.command()
+@as_option
 def init():
     """Init config file."""
     default_config_path = path.join(
@@ -157,14 +168,14 @@ def init():
             default_config_path))
 
 
-@cli.command()
+@as_option
 def reindex():
     """Rebuild the index."""
     build_index()
     click.echo('Rebuild the index.')
 
 
-@cli.command()
+@as_option
 @click.argument('command')
 def locate(command):
     """Locate the command's man page."""
