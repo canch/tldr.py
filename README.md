@@ -38,7 +38,12 @@ alternative. Sometimes, you should read the man pages patiently ;)
 
 ## Install
 
-    $ (sudo) pip install tldr.py
+    $ git clone repo
+    $ (sudo) python setup.py install --record setup.log
+
+
+## Uninstall
+    $ (sudo) cat setup.log | (sudo) xargs rm -rf
 
 
 ## Usage
@@ -55,7 +60,7 @@ command usage.
 home directory, you can use the `TLDR_CONFIG_DIR` environment variable to point it to
 another folder(e.g. $HOME/.config)
 
-        $ tldr init
+        $ tldr --init
         Input the tldr repo path(absolute path): (e.g. /home/lord63/code/tldr/)
         Input your platform(linux, osx or sunos): (e.g. linux)
         Initializing the config file at ~/.tldrrc
@@ -77,19 +82,19 @@ you can custom it by yourself.(Note that the color should be in ['black', 'red',
 
 look for a command usage:
 
-    $ tldr find {{command}}
+    $ tldr {{command}}
 
 check for updates(so that we can get the latest man pages):
 
-    $ tldr update
+    $ tldr --update
 
 rebuild the index.json after you add some new pages:
 
-    $ tldr reindex
+    $ tldr --reindex
 
 locate the command man page:
 
-    $ tldr locate {{command}}
+    $ tldr --locate {{command}}
 
 Or you can use `tldr --help` to get the help message.
 
